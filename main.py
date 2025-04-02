@@ -1,8 +1,3 @@
 def greet():
-    print("Hello World - updated in main")
-
-
-def greet2():
-    print("hello from advanced feature")
-
-greet2()
+    print("fixed in feature")
+    
