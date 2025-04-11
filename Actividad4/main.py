@@ -6,3 +6,5 @@ def greet():
 greet()
 
 print('mensaje1')
+print('mensaje2')
+print('mensaje3')
