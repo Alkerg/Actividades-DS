@@ -84,7 +84,18 @@ Utilizando el comando git diff, ¿cómo compararías los cambios entre ramas par
 **Pregunta:**
 Describe cómo usarías el comando git merge --no-commit --no-ff para simular una fusión en tu rama local. ¿Qué ventajas tiene esta práctica en un flujo de trabajo ágil con CI/CD, y cómo ayuda a minimizar errores antes de hacer commits definitivos? ¿Cómo automatizarías este paso dentro de una pipeline CI/CD?
 **Respuesta:**
+La principal ventaja de este comando es que nos permite ejecutar pruebas y validaciones antes de hacer el commit final de merge, de este modo se evita que lleguen a producción merges rotos o con conflictos no resueltos.
+Automatizaría este paso de la siguiente manera:
 
+```
+ name: Fetch PR branch
+        run: |
+          git fetch origin ${{ github.head_ref }}:${{ github.head_ref }}
+
+      - name: Merge PR branch (simulate)
+        run: |
+          git merge --no-commit --no-ff ${{ github.head_ref }}
+```
 
 ##### Ejercicio para git mergetool
 
@@ -112,6 +123,17 @@ Explica las diferencias entre git reset --soft, git reset --mixed y git reset --
 Explica cómo utilizarías git revert para deshacer los cambios sin modificar el historial de commits. ¿Cómo te aseguras de que esta acción no afecte la pipeline de CI/CD y permita una rápida recuperación del sistema? Proporciona un ejemplo detallado de cómo revertirías varios commits consecutivos.
 
 **Respuesta:**
+Para asegurarnos de que esta acción no afecte el pipeline de CI/CD, es conveniente ejecutar pruebas de forma local o hacer el revert en una rama temporal para comprobar que todo siga funcionando. Para revertir varios commits consecutivos podemos hacer lo siguiente:
+```
+git log --oneline
+ccc333 (HEAD -> main) Agregar lógica de facturación
+bbb222 Corrección de errores en validación
+aaa111 Cambios en el formulario de checkout
+
+git revert --no-commit abc1234^..a1b2c3d
+git commit -m "Revertir cambios de checkout, validación y facturación por errores detectados en QA"
+
+```
 
 ##### Ejercicio para git stash
 
@@ -129,7 +151,65 @@ Explica cómo utilizarías git stash para guardar temporalmente tus cambios y vo
 Diseña un archivo .gitignore que excluya archivos innecesarios en un entorno ágil de desarrollo. Explica por qué es importante mantener este archivo actualizado en un equipo colaborativo que utiliza CI/CD y cómo afecta la calidad y limpieza del código compartido en el repositorio.
 
 **Respuesta:**
+El archivo *.gitignore* sería el siguiente:
 
+```
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de entorno
+.env
+*.env.*
+*.local
+
+# Dependencias
+node_modules/
+vendor/
+
+# Compilación / build
+dist/
+build/
+*.log
+*.out
+*.class
+*.pyc
+__pycache__/
+*.o
+*.exe
+*.dll
+
+# IDEs y editores
+.vscode/
+.idea/
+*.swp
+*.sublime-workspace
+*.sublime-project
+
+# Cobertura y pruebas
+coverage/
+*.lcov
+test-results/
+junit-report.xml
+
+# CI/CD
+*.pid
+*.lock
+*.bak
+
+# Archivos temporales y otros
+*.tmp
+*.bak
+*.old
+*.orig
+
+# Docker
+docker-compose.override.yml
+
+# Sistema de control de versiones propio
+.git/
+```
+Es importante mantener este archivo actualizado porque los desarrolladores podrían filtrarse archivos innecesarios en las ramas de desarrollo o de producción y además de ocupar espacio innecesario, se pueden colar variables sensibles o archivos de caché locales y en general, provocaría un caos entre los desarrolladores y multiples problemas de merge. Con un *.gitignore* completo y actualizado los commits y las fusiones serían limpios y se evitarían los problemas anteriormente mencionados. 
 
 
 
