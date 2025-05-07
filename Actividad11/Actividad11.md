@@ -8,7 +8,7 @@ Instalamos las herramientas necesarias mediante el siguiente comando: ```python3
 ## Paso 3: Escribiendo aserciones para el método is_empty()
 
 ```
-def test_is_empty():
+def test_is_empty(self):
     stack = Stack()
     assert stack.is_empty() == True  # La pila recién creada debe estar vacía
     stack.push(5)
